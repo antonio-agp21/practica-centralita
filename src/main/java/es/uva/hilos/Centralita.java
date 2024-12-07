@@ -19,11 +19,11 @@ public class Centralita {
 	private ExecutorService executorService = Executors.newCachedThreadPool();; // Pool de tamaño variable de hilos
 
 	public void conEmpleado(Empleado e) {
-
+		//Se ejecuta dentro de un bloque synchronized para evitar resultados inesperados y atender las llamadas en espera con el nuevo empleado
 		synchronized (this) {
 			empleados.add(e);
 			logger.debug("Anadido el empleado " + e.getNombre());
-			notifyAll();
+			notifyAll(); // Notificar a todos los hilos en espera
 		}
 
 	}
@@ -62,7 +62,7 @@ public class Centralita {
 
 				try {
 					logger.debug("Esperando a que haya empleados disponibles");
-					wait();
+					wait();//Se pone la llamada en espera
 				} catch (InterruptedException e) {
 				}
 			}
