@@ -39,7 +39,8 @@ public class Centralita {
 						+ " atendía la llamada " + llamada.getId());
 
 			}
-			synchronized (this) {
+			//dentro de un bloque synchronized para evitar comportamientos inesperados y poder notificar a los hilos en espera
+	        	synchronized (this) {
 				ocupados.remove(empleado);
 				notifyAll(); // Notificar a todos los hilos en espera
 			}
@@ -56,13 +57,14 @@ public class Centralita {
 		int indice = -1;
 		cola.encolar(llamada);
 		logger.info("Hemos recibido la llamada " + llamada.getId());
-		synchronized (this) {
+		//dentro de un bloque synchronized para evitar comportamientos inesperados y poder poner hilos en espera 
+	        synchronized (this) {
 
 			while (ocupados.size() >= empleados.size()) {
 
 				try {
 					logger.debug("Esperando a que haya empleados disponibles");
-					wait();//Se pone la llamada en espera
+					wait();//ponemos la llamada en espera
 				} catch (InterruptedException e) {
 				}
 			}
@@ -73,9 +75,6 @@ public class Centralita {
 					indice = i;
 			}
 
-		}
-
-		synchronized (this) {
 			ocupados.add(empleados.get(indice));
 			executorService.submit(atenderLlamadaConEmpleado(empleados.get(indice), cola.desencolar()));
 		}
